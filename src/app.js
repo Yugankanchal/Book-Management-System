@@ -10,10 +10,13 @@ app.use(
     credentials: true,
   })
 );
-
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" })); // extended true -> nesting of objects
+app.use(express.static("Public"));
 app.use(cookieParser());
-app.use(urlencoded({ extended: true, limit: "16kb" }));
-app.use(json({ limit: "16kb" }));
-app.use(express.static("public"));
+
+import authorRouter from "./routes/author.routes.js";
+
+app.use("/api/v1/authors", authorRouter);
 
 export default app;
