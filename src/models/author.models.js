@@ -39,8 +39,9 @@ const authorSchema = new Schema(
 );
 
 authorSchema.pre("save", async function (next) {
-  if (!this.isModified(this.password)) return next();
-  this.password = await bcrypt(this.password, 10);
+  console.log("saving data");
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
   return next();
 });
 

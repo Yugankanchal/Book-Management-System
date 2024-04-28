@@ -59,9 +59,7 @@ const logInAuthor = asyncHandler(async (req, res) => {
   if ([password, email].some((fields) => fields.trim() === "")) {
     throw new ApiError(400, "Enter valid email or password");
   }
-  const author = await Author.findOne({ email }).select(
-    "-password -refreshToken"
-  );
+  const author = await Author.findOne({ email });
   if (!author) throw new ApiError("author doesn't exist");
   const isPasswordCorrect = await author.isPasswordCorrect(password);
   if (!isPasswordCorrect)
@@ -69,6 +67,7 @@ const logInAuthor = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = generateAccessAndRefreshToken(
     author._id
   );
+
   const options = {
     httpOnly: true,
     secure: true,
