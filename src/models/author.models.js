@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 const authorSchema = new Schema(
   {
     authorName: {
@@ -18,7 +19,7 @@ const authorSchema = new Schema(
     },
     avatar: {
       type: String,
-      // required: true,
+      required: true,
     },
     booksWritten: [
       {
@@ -43,8 +44,27 @@ authorSchema.pre("save", async function (next) {
   return next();
 });
 
-authorSchema.methods.isPasswordCorrect = (password) => {
-  return bcrypt.compare(this.password, password);
+authorSchema.methods.isPasswordCorrect = async (password) => {
+  return await bcrypt.compare(this.password, password);
+};
+
+authorSchema.methods.generateAccessToken = () => {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      authorName: this.authorName,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
+authorSchema.methods.generateRefreshToken = () => {
+  jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.process.env.REFRESH_TOKEN_EXPIRY,
+  });
 };
 
 export const Author = mongoose.model("Author", authorSchema);

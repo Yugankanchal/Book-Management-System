@@ -1,10 +1,19 @@
 import express, { Router } from "express";
-import { registerAuthor } from "../controller/author.controller.js";
-import multer from "multer";
-
-const upload = multer({ dest: "/public/temp" });
+import {
+  logInAuthor,
+  registerAuthor,
+} from "../controller/author.controller.js";
+import { uploads } from "../middlewares/multer.middleware.js";
 
 const router = Router();
-router.post("/register", upload.single("avatar"), registerAuthor);
+router.post(
+  "/register",
+  uploads.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "cloudinary", maxCount: 1 },
+  ]),
+  registerAuthor
+);
+router.route("/login").post(logInAuthor);
 
 export default router;
