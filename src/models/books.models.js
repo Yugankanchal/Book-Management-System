@@ -2,7 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 const bookSchema = new Schema(
   {
-    book: [
+    bookName: {
+      type: String,
+      required: true,
+    },
+    bookAuthor: [
       {
         type: mongoose.Types.ObjectId,
         ref: "Author",

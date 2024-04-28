@@ -45,10 +45,10 @@ authorSchema.pre("save", async function (next) {
 });
 
 authorSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(this.password, password);
+  return await bcrypt.compare(password, this.password);
 };
 
-authorSchema.methods.generateAccessToken = () => {
+authorSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
@@ -61,9 +61,9 @@ authorSchema.methods.generateAccessToken = () => {
     }
   );
 };
-authorSchema.methods.generateRefreshToken = () => {
-  jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: process.env.process.env.REFRESH_TOKEN_EXPIRY,
+authorSchema.methods.generateRefreshToken = function () {
+  return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
   });
 };
 

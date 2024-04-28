@@ -13,7 +13,8 @@ const generateAccessAndRefreshToken = async (author_id) => {
     await author.save({ validateBeforeSave: false });
     return { accessToken, refreshToken };
   } catch (error) {
-    throw ApiError(
+    console.log(error);
+    throw new ApiError(
       500,
       "Something went wrong while generating accessToken and refreshToken"
     );
@@ -61,18 +62,20 @@ const logInAuthor = asyncHandler(async (req, res) => {
   }
   const author = await Author.findOne({ email });
   if (!author) throw new ApiError("author doesn't exist");
-  console.log(author);
   const isPasswordCorrect = await author.isPasswordCorrect(password);
   if (!isPasswordCorrect)
     throw new ApiError(400, "Please Enter a valid password");
-  const { accessToken, refreshToken } = generateAccessAndRefreshToken(
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     author._id
   );
-
+  const loggedInAuthor = await Author.findById(author._id).select(
+    "-password -refreshToken"
+  );
   const options = {
     httpOnly: true,
     secure: true,
   };
+
   res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -80,7 +83,7 @@ const logInAuthor = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { logInAuthor, accessToken, refreshToken },
+        { loggedInAuthor, accessToken, refreshToken },
         "author loggedIn successfully"
       )
     );
