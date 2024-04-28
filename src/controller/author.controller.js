@@ -88,4 +88,28 @@ const logInAuthor = asyncHandler(async (req, res) => {
       )
     );
 });
-export { registerAuthor, logInAuthor };
+
+const authorLogout = asyncHandler(async (req, res) => {
+  await Author.findByIdAndUpdate(
+    req.author._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+  const options = {
+    httpOnly: true, // making cookies Secure so that it can't modified from the frontend, only backend could modified that
+    secure: true,
+  };
+  res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "Author LoggedOut"));
+});
+
+export { registerAuthor, logInAuthor, authorLogout };
