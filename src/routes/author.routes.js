@@ -14,6 +14,6 @@ router.post(
   ]),
   registerAuthor
 );
-router.route("/login").post(logInAuthor);
+router.post("/login", logInAuthor);
 
 export default router;

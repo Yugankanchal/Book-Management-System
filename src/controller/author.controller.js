@@ -56,11 +56,12 @@ const registerAuthor = asyncHandler(async (req, res) => {
 });
 const logInAuthor = asyncHandler(async (req, res) => {
   const { password, email } = req.body;
-  if ([password, email].some((fields) => fields.trim() === "")) {
+  if ([password, email].some((elements) => elements.trim() === "")) {
     throw new ApiError(400, "Enter valid email or password");
   }
   const author = await Author.findOne({ email });
   if (!author) throw new ApiError("author doesn't exist");
+  console.log(author);
   const isPasswordCorrect = await author.isPasswordCorrect(password);
   if (!isPasswordCorrect)
     throw new ApiError(400, "Please Enter a valid password");
@@ -76,6 +77,12 @@ const logInAuthor = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(200));
+    .json(
+      new ApiResponse(
+        200,
+        { logInAuthor, accessToken, refreshToken },
+        "author loggedIn successfully"
+      )
+    );
 });
 export { registerAuthor, logInAuthor };

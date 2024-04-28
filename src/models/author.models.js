@@ -39,13 +39,12 @@ const authorSchema = new Schema(
 );
 
 authorSchema.pre("save", async function (next) {
-  console.log("saving data");
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   return next();
 });
 
-authorSchema.methods.isPasswordCorrect = async (password) => {
+authorSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(this.password, password);
 };
 
