@@ -1,9 +1,9 @@
 import express, { Router } from "express";
 import {
-  authorLogout,
-  logInAuthor,
-  registerAuthor,
-} from "../controller/author.controller.js";
+  userLogout,
+  logInUser,
+  registerUser,
+} from "../controller/user.controller.js";
 import { uploads } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 
@@ -14,10 +14,10 @@ router.post(
     { name: "avatar", maxCount: 1 },
     { name: "cloudinary", maxCount: 1 },
   ]),
-  registerAuthor
+  registerUser
 );
-router.post("/login", logInAuthor);
+router.post("/login", logInUser);
 
 // Secured routes
-router.post("/logout", verifyJwt, authorLogout);
+router.post("/logout", verifyJwt, userLogout);
 export default router;
